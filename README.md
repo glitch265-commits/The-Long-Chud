@@ -1,6 +1,6 @@
 # The Long Chud
 
-A GitHub Pages version of the Long Doge Challenge idea, using a custom character image.
+for big hariz younis chud
 
 ## Files
 
