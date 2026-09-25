@@ -3,41 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Long Chud</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Long Chud</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121214;
+      overflow-x: hidden;
+    }
+
+    /* Character Container Layout */
+    .character-assembly {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Top Head Piece */
+    .head-segment {
+      width: 450px;
+      height: 380px;
+      background-image: url('chud.png');
+      background-position: top center;
+      background-size: 450px auto;
+      background-repeat: no-repeat;
+      margin-top: 50px;
+    }
+
+    /* Infinite Looping Shirt Middle */
+    .infinite-shirt {
+      width: 450px;
+      /* Adjust this height if you want it longer or shorter */
+      height: 15000px; 
+      background-image: url('chud.png');
+      /* Crops the shirt area below the head */
+      background-position: center -390px; 
+      background-size: 450px auto;
+      background-repeat: repeat-y;
+    }
+
+    /* Bottom Hem Finish */
+    .bottom-segment {
+      width: 450px;
+      height: 140px;
+      background-image: url('chud.png');
+      background-position: bottom center;
+      background-size: 450px auto;
+      background-repeat: no-repeat;
+      margin-bottom: 50px;
+    }
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <h1>THE LONG CHUD</h1>
-      <p>How long can you make them?</p>
-    </div>
 
-    <div class="stats">
-      <span>CHUDS: <strong id="wowCount">0</strong></span>
-      <span>LENGTH: <strong id="lengthCount">1</strong></span>
-      <button id="printBtn">🖨️ Print</button>
-    </div>
-  </header>
+  <div class="character-assembly">
+    <!-- Top Head Part -->
+    <div class="head-segment"></div>
+    
+    <!-- Endless Repeating Shirt Body -->
+    <div class="infinite-shirt"></div>
+    
+    <!-- Bottom Hem Cut Part -->
+    <div class="bottom-segment"></div>
+  </div>
 
-  <main id="challenge">
-    <section class="intro">
-      <h2>⬇️ SCROLL TO MAKE THEM LONGER ⬇️</h2>
-      <p>Every time you scroll down, another section appears.</p>
-      <button id="wowBtn">CHUD!</button>
-    </section>
-
-    <div id="personContainer" aria-label="The endlessly growing person"></div>
-
-    <section class="end-message">
-      <h2>CHUD. YOU MADE IT THIS FAR.</h2>
-      <p>Keep scrolling. There is no finish line.</p>
-      <button id="secretBtn">DO NOT CLICK</button>
-    </section>
-  </main>
-
-  <div id="toast" class="toast">WOW!</div>
-
-  <script src="script.js"></script>
 </body>
 </html>
