@@ -33,7 +33,7 @@ function addPieces(amount = 3) {
   }
 }
 
-function showWow(message = "WOW!") {
+function showWow(message = "CHUD!") {
   wows++;
   wowCount.textContent = wows;
 
@@ -45,10 +45,10 @@ function showWow(message = "WOW!") {
   toast.classList.add("show");
 }
 
-wowBtn.addEventListener("click", () => showWow("WOW!"));
+wowBtn.addEventListener("click", () => showWow("CHUD!"));
 
 secretBtn.addEventListener("click", () => {
-  showWow("SECRET WOW!");
+  showWow("SECRET CHUD!");
   document.body.animate(
     [
       { transform: "translateX(0)" },
