@@ -14,6 +14,66 @@
       overflow-x: hidden;
     }
 
+    /* 10-Second Loading Screen Overlay */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0b0f19;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* Aligns content toward the top */
+      padding-top: 15vh; /* Places the text perfectly center-screen but a bit to the top */
+      box-sizing: border-box;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-title {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #ff4500;
+      letter-spacing: 3px;
+      margin: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
+    }
+
+    #loading-credit {
+      font-size: 1.2rem;
+      color: #888;
+      margin: 10px 0 30px 0;
+      letter-spacing: 1px;
+    }
+
+    /* Loading Bar Track Container */
+    .progress-container {
+      width: 300px;
+      height: 12px;
+      background-color: #222;
+      border-radius: 6px;
+      border: 2px solid #ff450033;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Filled Loading Progress Bar */
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background-color: #ff4500;
+      /* Animates smoothly from 0 to 100 over exactly 10 seconds */
+      animation: loadProgress 10s linear forwards;
+    }
+
+    @keyframes loadProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
     /* Score Counter UI Overlay */
     #ui-container {
       position: fixed;
@@ -60,7 +120,7 @@
     /* Infinite Looping Shirt Middle */
     .infinite-shirt {
       width: 450px;
-      height: 20000px; /* Made very long so you have plenty of space to collect items */
+      height: 20000px; 
       background-image: url('chud.jpg');
       background-position: center -390px; 
       background-size: 450px auto;
@@ -118,7 +178,6 @@
       z-index: 50;
     }
 
-    /* Class added via JavaScript once collected */
     .chud-token.collected {
       transform: scale(0);
       opacity: 0;
@@ -127,6 +186,15 @@
   </style>
 </head>
 <body>
+
+  <!-- 10-Second Intro Loading Screen -->
+  <div id="loading-screen">
+    <div id="loading-title">loading chud...</div>
+    <div id="loading-credit">made by herkus</div>
+    <div class="progress-container">
+      <div class="progress-bar"></div>
+    </div>
+  </div>
 
   <!-- Floating UI Header Overlay -->
   <div id="ui-container">
@@ -137,7 +205,7 @@
     <!-- Top Head Part -->
     <div class="head-segment"></div>
     
-    <!-- Endless Repeating Shirt Body (Floating words spawn inside here) -->
+    <!-- Endless Repeating Shirt Body -->
     <div class="infinite-shirt" id="shirt-body"></div>
     
     <!-- Bottom Hem Cut Part with End Button -->
@@ -148,27 +216,36 @@
 
   <script>
     let collectedCount = 0;
-    const totalTokensToSpawn = 50; // Change this number to add more or fewer words down the body
+    const totalTokensToSpawn = 50; 
     const shirtBody = document.getElementById('shirt-body');
     const scoreDisplay = document.getElementById('score');
 
-    // Automatically generates words at random coordinates down the shirt column
+    // Handles hiding the loading screen after precisely 10 seconds (10000 milliseconds)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loading-screen');
+        loader.style.opacity = '0';
+        // Completely removes the layer after it fades out so you can click the website elements
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 500); 
+      }, 10000); 
+    });
+
+    // Spawns tokens down the body canvas
     for (let i = 0; i < totalTokensToSpawn; i++) {
       const token = document.createElement('div');
       token.className = 'chud-token';
       token.innerText = 'CHUD';
 
-      // Randomize positions (X stays inside/near the body width context, Y scales down the height)
-      const randomX = Math.floor(Math.random() * 370); // Keeps them placed across the width of the shirt
-      const randomY = Math.floor(Math.random() * 19500); // Spreads them down the entire height track
+      const randomX = Math.floor(Math.random() * 370); 
+      const randomY = Math.floor(Math.random() * 19500); 
 
       token.style.left = randomX + 'px';
       token.style.top = randomY + 'px';
 
-      // Collection Logic: Triggers if you hover over it or tap it
       const collect = () => {
         if (!token.classList.contains('collected')) {
-          token.classList.contains('collected');
           token.classList.add('collected');
           collectedCount++;
           scoreDisplay.innerText = `CHUDS COLLECTED: ${collectedCount}`;
@@ -181,11 +258,9 @@
       shirtBody.appendChild(token);
     }
 
-    // Function that runs when the bottom button is pressed
     function triggerEndGame() {
       alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!`);
     }
   </script>
 </body>
 </html>
-
