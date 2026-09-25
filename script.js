@@ -45,7 +45,7 @@ function showWow(message = "CHUD!") {
   toast.classList.add("show");
 }
 
-wowBtn.addEventListener("click", () => showWow("CHUD!"));
+wowBtn.addEventListener("click", () => showChud("CHUD!"));
 
 secretBtn.addEventListener("click", () => {
   showWow("SECRET CHUD!");
