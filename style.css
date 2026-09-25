@@ -1,0 +1,213 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #111;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 22px;
+  background: rgba(10, 10, 10, 0.94);
+  border-bottom: 2px solid #333;
+  backdrop-filter: blur(8px);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(18px, 3vw, 30px);
+  letter-spacing: 2px;
+}
+
+.topbar p {
+  margin: 4px 0 0;
+  color: #aaa;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.stats span {
+  white-space: nowrap;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 17px;
+  font-weight: 800;
+  cursor: pointer;
+  background: #fff;
+  color: #111;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 18px rgba(255,255,255,0.35);
+}
+
+.intro {
+  min-height: 55vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 70px 20px 35px;
+}
+
+.intro h2 {
+  font-size: clamp(26px, 6vw, 60px);
+  margin: 0;
+}
+
+.intro p {
+  color: #bbb;
+  margin: 0 0 12px;
+}
+
+#wowBtn {
+  font-size: 22px;
+  padding: 14px 28px;
+}
+
+#personContainer {
+  width: min(92vw, 600px);
+  margin: 0 auto;
+  position: relative;
+}
+
+.person-piece {
+  width: 100%;
+  display: block;
+  margin: -45px auto 0;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 16px rgba(0,0,0,0.4));
+}
+
+.person-piece:first-child {
+  margin-top: 0;
+}
+
+/* Gives each repeated image a tiny random-looking tilt. */
+.person-piece:nth-child(3n) {
+  transform: rotate(0.8deg);
+}
+
+.person-piece:nth-child(4n) {
+  transform: rotate(-0.6deg);
+}
+
+.end-message {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  padding: 80px 20px;
+}
+
+.end-message h2 {
+  font-size: clamp(28px, 6vw, 64px);
+  margin: 0;
+}
+
+.end-message p {
+  color: #aaa;
+  font-size: 18px;
+}
+
+#secretBtn {
+  background: #ffd84d;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 200;
+  transform: translate(-50%, -50%) scale(0.5);
+  opacity: 0;
+  pointer-events: none;
+  font-size: clamp(50px, 15vw, 150px);
+  font-weight: 1000;
+  text-shadow: 0 8px 0 #000;
+}
+
+.toast.show {
+  animation: wow 0.8s ease forwards;
+}
+
+@keyframes wow {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5) rotate(-8deg);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.15) rotate(5deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.5) rotate(0);
+  }
+}
+
+@media (max-width: 700px) {
+  .topbar {
+    position: relative;
+    flex-direction: column;
+  }
+
+  .intro {
+    min-height: 65vh;
+  }
+
+  #personContainer {
+    width: 100vw;
+  }
+}
+
+@media print {
+  .topbar,
+  .intro,
+  .end-message,
+  .toast {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  #personContainer {
+    width: 100%;
+  }
+
+  .person-piece {
+    margin-top: -25px;
+  }
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Long Chud</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>THE LONG CHUD</h1>
+      <p>How long can you make them?</p>
+    </div>
+
+    <div class="stats">
+      <span>WOWS: <strong id="wowCount">0</strong></span>
+      <span>LENGTH: <strong id="lengthCount">1</strong></span>
+      <button id="printBtn">🖨️ Print</button>
+    </div>
+  </header>
+
+  <main id="challenge">
+    <section class="intro">
+      <h2>⬇️ SCROLL TO MAKE THEM LONGER ⬇️</h2>
+      <p>Every time you scroll down, another section appears.</p>
+      <button id="wowBtn">WOW!</button>
+    </section>
+
+    <div id="personContainer" aria-label="The endlessly growing person"></div>
+
+    <section class="end-message">
+      <h2>WOW. YOU MADE IT THIS FAR.</h2>
+      <p>Keep scrolling. There is no finish line.</p>
+      <button id="secretBtn">DO NOT CLICK</button>
+    </section>
+  </main>
+
+  <div id="toast" class="toast">WOW!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
