@@ -3,13 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Long Chud</title>
+  <title>Long Chud Collector</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       background-color: #121214;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
       overflow-x: hidden;
+    }
+
+    /* Score Counter UI Overlay */
+    #ui-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 20, 25, 0.95);
+      padding: 12px 30px;
+      border-radius: 12px;
+      border: 2px solid #ff4500;
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    #score {
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 0;
+      color: #ff4500;
+      letter-spacing: 1px;
     }
 
     /* Character Container Layout */
@@ -18,53 +43,149 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
+      position: relative;
     }
 
     /* Top Head Piece */
     .head-segment {
       width: 450px;
       height: 380px;
-      background-image: url('chud.jpg'); /* Updated to look for your .jpg */
+      background-image: url('chud.jpg');
       background-position: top center;
       background-size: 450px auto;
       background-repeat: no-repeat;
-      margin-top: 50px;
+      margin-top: 100px;
     }
 
     /* Infinite Looping Shirt Middle */
     .infinite-shirt {
       width: 450px;
-      height: 15000px; 
-      background-image: url('chud.jpg'); /* Updated to look for your .jpg */
+      height: 20000px; /* Made very long so you have plenty of space to collect items */
+      background-image: url('chud.jpg');
       background-position: center -390px; 
       background-size: 450px auto;
       background-repeat: repeat-y;
+      position: relative;
     }
 
     /* Bottom Hem Finish */
     .bottom-segment {
       width: 450px;
       height: 140px;
-      background-image: url('chud.jpg'); /* Updated to look for your .jpg */
+      background-image: url('chud.jpg');
       background-position: bottom center;
       background-size: 450px auto;
       background-repeat: no-repeat;
-      margin-bottom: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 100px;
+    }
+
+    /* The End Game Button styling */
+    .end-button {
+      background-color: #ff4500;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 5px 0 #992600;
+      transition: all 0.1s ease;
+      font-family: inherit;
+    }
+
+    .end-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 #992600;
+    }
+
+    /* Scattered "CHUD" text tokens styles */
+    .chud-token {
+      position: absolute;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00ffcc;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 4px 10px;
+      border-radius: 5px;
+      border: 1px solid #00ffcc88;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      z-index: 50;
+    }
+
+    /* Class added via JavaScript once collected */
+    .chud-token.collected {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
 
+  <!-- Floating UI Header Overlay -->
+  <div id="ui-container">
+    <div id="score">CHUDS COLLECTED: 0</div>
+  </div>
+
   <div class="character-assembly">
     <!-- Top Head Part -->
     <div class="head-segment"></div>
     
-    <!-- Endless Repeating Shirt Body -->
-    <div class="infinite-shirt"></div>
+    <!-- Endless Repeating Shirt Body (Floating words spawn inside here) -->
+    <div class="infinite-shirt" id="shirt-body"></div>
     
-    <!-- Bottom Hem Cut Part -->
-    <div class="bottom-segment"></div>
+    <!-- Bottom Hem Cut Part with End Button -->
+    <div class="bottom-segment">
+      <button class="end-button" onclick="triggerEndGame()">FINISH THE CHALLENGE</button>
+    </div>
   </div>
 
+  <script>
+    let collectedCount = 0;
+    const totalTokensToSpawn = 50; // Change this number to add more or fewer words down the body
+    const shirtBody = document.getElementById('shirt-body');
+    const scoreDisplay = document.getElementById('score');
+
+    // Automatically generates words at random coordinates down the shirt column
+    for (let i = 0; i < totalTokensToSpawn; i++) {
+      const token = document.createElement('div');
+      token.className = 'chud-token';
+      token.innerText = 'CHUD';
+
+      // Randomize positions (X stays inside/near the body width context, Y scales down the height)
+      const randomX = Math.floor(Math.random() * 370); // Keeps them placed across the width of the shirt
+      const randomY = Math.floor(Math.random() * 19500); // Spreads them down the entire height track
+
+      token.style.left = randomX + 'px';
+      token.style.top = randomY + 'px';
+
+      // Collection Logic: Triggers if you hover over it or tap it
+      const collect = () => {
+        if (!token.classList.contains('collected')) {
+          token.classList.contains('collected');
+          token.classList.add('collected');
+          collectedCount++;
+          scoreDisplay.innerText = `CHUDS COLLECTED: ${collectedCount}`;
+        }
+      };
+
+      token.addEventListener('mouseover', collect);
+      token.addEventListener('touchstart', collect);
+
+      shirtBody.appendChild(token);
+    }
+
+    // Function that runs when the bottom button is pressed
+    function triggerEndGame() {
+      alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!`);
+    }
+  </script>
 </body>
 </html>
+
