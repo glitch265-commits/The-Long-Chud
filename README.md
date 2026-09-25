@@ -25,4 +25,4 @@ Open `index.html` in a browser.
 
 Your project site will normally be at:
 
-`https://YOUR-USERNAME.github.io/the-long-chud/`
+`https://glitch265-commits.github.io/the-long-chud/`
