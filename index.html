@@ -14,62 +14,6 @@
       overflow-x: hidden;
     }
 
-    /* 10-Second Loading Screen Overlay */
-    #loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #0b0f19;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding-top: 15vh;
-      box-sizing: border-box;
-      transition: opacity 0.5s ease;
-    }
-
-    #loading-title {
-      font-size: 3rem;
-      font-weight: bold;
-      color: #ff4500;
-      letter-spacing: 3px;
-      margin: 0;
-      text-transform: uppercase;
-      text-shadow: 0 0 15px rgba(255, 69, 0, 0.4);
-    }
-
-    #loading-credit {
-      font-size: 1.2rem;
-      color: #888;
-      margin: 10px 0 30px 0;
-      letter-spacing: 1px;
-    }
-
-    .progress-container {
-      width: 300px;
-      height: 12px;
-      background-color: #222;
-      border-radius: 6px;
-      border: 2px solid #ff450033;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      width: 0%;
-      height: 100%;
-      background-color: #ff4500;
-      animation: loadProgress 10s linear forwards;
-    }
-
-    @keyframes loadProgress {
-      0% { width: 0%; }
-      100% { width: 100%; }
-    }
-
     /* Score Counter UI Overlay */
     #ui-container {
       position: fixed;
@@ -240,15 +184,6 @@
 </head>
 <body>
 
-  <!-- 10-Second Intro Loading Screen -->
-  <div id="loading-screen">
-    <div id="loading-title">loading chud...</div>
-    <div id="loading-credit">made by herkus</div>
-    <div class="progress-container">
-      <div class="progress-bar"></div>
-    </div>
-  </div>
-
   <!-- Main Scrolling Segment Wrap -->
   <div id="main-game-content">
     <div id="ui-container">
@@ -286,13 +221,6 @@
     const scoreDisplay = document.getElementById('score');
     let pongAnimationId;
 
-    // Direct Countdown Fix: Hides the screen smoothly after exactly 10 seconds
-    setTimeout(() => {
-      const loader = document.getElementById('loading-screen');
-      loader.style.opacity = '0';
-      setTimeout(() => { loader.style.display = 'none'; }, 500); 
-    }, 10000);
-
     // Spawns tokens down the body canvas
     for (let i = 0; i < totalTokensToSpawn; i++) {
       const token = document.createElement('div');
@@ -326,9 +254,6 @@
       startPongGame();
     }
 
-    // ==========================================
-    // PONG ENGINE MECHANICS
-    // ==========================================
     function startPongGame() {
       const canvas = document.getElementById('pong-canvas');
       const ctx = canvas.getContext('2d');
@@ -366,4 +291,56 @@
 
         if (ballX <= 0 || ballX + ballSize >= canvas.width) { ballSpeedX = -ballSpeedX; }
         if (ballY <= 0) { ballSpeedY = -ballSpeedY; }
+
+        if (ballY + ballSize >= canvas.height - paddleHeight - 10) {
+          if (ballX + ballSize >= paddleX && ballX <= paddleX + paddleWidth) {
+            ballSpeedY = -ballSpeedY;
+            ballSpeedY *= 1.05;
+            ballSpeedX *= 1.05;
+            playerPongScore++;
+
+            if (playerPongScore === 25 && !promptTriggered) {
+              promptTriggered = true;
+              cancelAnimationFrame(pongAnimationId);
+              
+              setTimeout(() => {
+                const choice = confirm("Milestone Achieved! You reached 25 bounces!\n\nWould you like to step it up and play CHUD SURFERS?");
+                if (choice) {
+                  document.getElementById('pong-arena').style.display = 'none';
+                  document.getElementById('surfers-arena').style.display = 'flex';
+                  startSurfersGame();
+                } else {
+                  promptTriggered = false;
+                  requestAnimationFrame(updateAndRenderFrame);
+                }
+              }, 100);
+              return;
+            }
+
+          } else if (ballY > canvas.height) {
+            alert(`Game Over! You kept the Chud bouncing ${playerPongScore} times!`);
+            ballX = canvas.width / 2;
+            ballY = 50;
+            ballSpeedX = 4;
+            ballSpeedY = 4;
+            playerPongScore = 0;
+          }
+        }
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff4500';
+        ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+
+        if (imageLoaded) {
+          ctx.drawImage(ballImage, ballX, ballY, ballSize, ballSize);
+        } else {
+          ctx.fillStyle = '#ff4500';
+          ctx.fillRect(ballX, ballY, ballSize, ballSize);
+        }
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px sans-serif';
+        ctx.fillText(`Bounces: ${playerPongScore}/25`, 20, 35);
 
