@@ -102,6 +102,7 @@
       box-shadow: 0 1px 0 #992600;
     }
 
+    /* Scattered "CHUD" text tokens styles */
     .chud-token {
       position: absolute;
       font-size: 1.5rem;
@@ -221,13 +222,13 @@
     const scoreDisplay = document.getElementById('score');
     let pongAnimationId;
 
-    // Spawns tokens down the body canvas
+    // Spawns CHUD text elements safely inside bounds
     for (let i = 0; i < totalTokensToSpawn; i++) {
       const token = document.createElement('div');
       token.className = 'chud-token';
       token.innerText = 'CHUD';
 
-      const randomX = Math.floor(Math.random() * 370); 
+      const randomX = Math.floor(Math.random() * 350); 
       const randomY = Math.floor(Math.random() * 19500); 
 
       token.style.left = randomX + 'px';
@@ -254,6 +255,9 @@
       startPongGame();
     }
 
+    // ==========================================
+    // PONG ENGINE MECHANICS
+    // ==========================================
     function startPongGame() {
       const canvas = document.getElementById('pong-canvas');
       const ctx = canvas.getContext('2d');
@@ -337,10 +341,4 @@
           ctx.drawImage(ballImage, ballX, ballY, ballSize, ballSize);
         } else {
           ctx.fillStyle = '#ff4500';
-          ctx.fillRect(ballX, ballY, ballSize, ballSize);
-        }
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '20px sans-serif';
-        ctx.fillText(`Bounces: ${playerPongScore}/25`, 20, 35);
 
