@@ -8,7 +8,6 @@
     body {
       margin: 0;
       padding: 0;
-      /* Gradient that shifts from crisp white to total deep space black down the massive height */
       background: linear-gradient(to bottom, #ffffff 0%, #a1a8b8 2%, #222836 10%, #0b0f19 30%, #000000 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: white;
@@ -182,7 +181,7 @@
 
     /* PONG ARCADE SCREEN STYLES */
     #pong-arena {
-      display: none; /* Initially invisible */
+      display: none; 
       position: fixed;
       top: 0;
       left: 0;
@@ -199,7 +198,7 @@
       background-color: #000;
       border: 4px solid #ff4500;
       box-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
-      cursor: none; /* Hides mouse over the game block */
+      cursor: none; 
     }
 
     .pong-title {
@@ -250,7 +249,7 @@
     const shirtBody = document.getElementById('shirt-body');
     const scoreDisplay = document.getElementById('score');
 
-    // Loading system dismiss step
+    // Loading system dismiss step - Force breaks screen after exactly 10 seconds
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const loader = document.getElementById('loading-screen');
@@ -284,34 +283,29 @@
       shirtBody.appendChild(token);
     }
 
-    // Finish action: triggers alert then launches Pong
     function triggerEndGame() {
       alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!\n\nClick OK to transport to CHUD PONG!`);
       
-      // Hide the scrolling list layer completely
       document.getElementById('main-game-content').style.display = 'none';
-      document.body.style.overflow = 'hidden'; // Stop global window scrolling
-      
-      // Load Pong arena view layout
+      document.body.style.overflow = 'hidden'; 
       document.getElementById('pong-arena').style.display = 'flex';
       startPongGame();
     }
 
-    // Pong Engine Mechanics
     function startPongGame() {
       const canvas = document.getElementById('pong-canvas');
       const ctx = canvas.getContext('2d');
 
-      // Load chud.jpg to act as the bouncing ball asset texture
       const ballImage = new Image();
+      let imageLoaded = false;
+      
+      ballImage.onload = () => { imageLoaded = true; };
       ballImage.src = 'chud.jpg';
 
-      // Game Variables Configuration
       const paddleWidth = 120;
       const paddleHeight = 15;
       let paddleX = (canvas.width - paddleWidth) / 2;
 
-      // Ball attributes (Size properties matching the aspect scale)
       const ballSize = 40; 
       let ballX = canvas.width / 2;
       let ballY = 50;
@@ -319,36 +313,50 @@
       let ballSpeedY = 4;
       let playerPongScore = 0;
 
-      // Capture mouse positioning coordinates to shift paddle across bottom X axis
       window.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
         const rootX = e.clientX - rect.left;
         paddleX = rootX - (paddleWidth / 2);
-        
-        // Prevent paddle moving outside bounds
         if (paddleX < 0) paddleX = 0;
         if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
       });
 
       function updateAndRenderFrame() {
-        // 1. Move ball positioning physics 
         ballX += ballSpeedX;
         ballY += ballSpeedY;
 
-        // Bounce horizontally off side boundaries
-        if (ballX <= 0 || ballX + ballSize >= canvas.width) {
-          ballSpeedX = -ballSpeedX;
-        }
-        // Bounce off top wall ceiling
-        if (ballY <= 0) {
-          ballSpeedY = -ballSpeedY;
-        }
+        if (ballX <= 0 || ballX + ballSize >= canvas.width) { ballSpeedX = -ballSpeedX; }
+        if (ballY <= 0) { ballSpeedY = -ballSpeedY; }
 
-        // 2. Check collision against player's bottom paddle boundary matrix
         if (ballY + ballSize >= canvas.height - paddleHeight - 10) {
-          // If the ball aligns inside the active left/right paddle width segment
           if (ballX + ballSize >= paddleX && ballX <= paddleX + paddleWidth) {
             ballSpeedY = -ballSpeedY;
-            // Slight boost speed mechanics over time
             ballSpeedY *= 1.05;
-            ballSpeedX *= 1.05
+            ballSpeedX *= 1.05;
+            playerPongScore++;
+          } else if (ballY > canvas.height) {
+            alert(`Game Over! You kept the Chud bouncing ${playerPongScore} times!`);
+            ballX = canvas.width / 2;
+            ballY = 50;
+            ballSpeedX = 4;
+            ballSpeedY = 4;
+            playerPongScore = 0;
+          }
+        }
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = '#ff4500';
+        ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
+
+        // Safety fallback: Draws image if loaded, otherwise draws a cool glowing red square
+        if (imageLoaded) {
+          ctx.drawImage(ballImage, ballX, ballY, ballSize, ballSize);
+        } else {
+          ctx.fillStyle = '#ff4500';
+          ctx.fillRect(ballX, ballY, ballSize, ballSize);
+        }
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '20px sans-serif';
