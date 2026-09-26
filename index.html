@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The long chud</title>
+  <title>Long Chud Game Center</title>
   <style>
     body {
       margin: 0;
@@ -198,14 +198,42 @@
       background-color: #000;
       border: 4px solid #ff4500;
       box-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
-      cursor: none; 
     }
 
     .pong-title {
       font-size: 2rem;
       font-weight: bold;
       color: #ff4500;
-      margin-bottom: 15px;
+      margin-bottom: 5px;
+      letter-spacing: 2px;
+    }
+
+    /* CHUD SURFERS ARCADE SCREEN STYLES */
+    #surfers-arena {
+      display: none; 
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #111116;
+      z-index: 6000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #surfers-canvas {
+      background-color: #222;
+      border: 4px solid #00ffcc;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+    }
+
+    .surfers-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00ffcc;
+      margin-bottom: 5px;
       letter-spacing: 2px;
     }
   </style>
@@ -239,8 +267,16 @@
   <!-- Secret Pong Container Screen -->
   <div id="pong-arena">
     <div class="pong-title">CHUD PONG</div>
+    <p style="color: #aaa; margin: 0 0 10px 0;">Reach 25 bounces to unlock the next mode!</p>
     <canvas id="pong-canvas" width="700" height="450"></canvas>
-    <p style="color: #666; margin-top: 15px;">Move your mouse left and right to control the paddle</p>
+    <p style="color: #666; margin-top: 15px;">Move mouse left and right to control the paddle</p>
+  </div>
+
+  <!-- Chud Surfers Container Screen -->
+  <div id="surfers-arena">
+    <div class="surfers-title">CHUD SURFERS</div>
+    <p style="color: #aaa; margin: 0 0 10px 0;">Use LEFT and RIGHT arrow keys to switch tracks. Avoid incoming barriers!</p>
+    <canvas id="surfers-canvas" width="400" height="600"></canvas>
   </div>
 
   <script>
@@ -248,13 +284,14 @@
     const totalTokensToSpawn = 50; 
     const shirtBody = document.getElementById('shirt-body');
     const scoreDisplay = document.getElementById('score');
+    let pongAnimationId;
 
-    // DIRECT TIMER BINDING (No wrapper event listeners)
+    // DIRECT TIMER BINDING 
     setTimeout(() => {
       const loader = document.getElementById('loading-screen');
       loader.style.opacity = '0';
       setTimeout(() => { loader.style.display = 'none'; }, 500); 
-    }, 10000); // 10000 milliseconds = Exactly 10 seconds
+    }, 10000);
 
     // Populate item tokens
     for (let i = 0; i < totalTokensToSpawn; i++) {
@@ -283,20 +320,21 @@
 
     function triggerEndGame() {
       alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!\n\nClick OK to transport to CHUD PONG!`);
-      
       document.getElementById('main-game-content').style.display = 'none';
       document.body.style.overflow = 'hidden'; 
       document.getElementById('pong-arena').style.display = 'flex';
       startPongGame();
     }
 
+    // ==========================================
+    // PONG ENGINE MECHANICS
+    // ==========================================
     function startPongGame() {
       const canvas = document.getElementById('pong-canvas');
       const ctx = canvas.getContext('2d');
 
       const ballImage = new Image();
       let imageLoaded = false;
-      
       ballImage.onload = () => { imageLoaded = true; };
       ballImage.src = 'chud.jpg';
 
@@ -310,6 +348,7 @@
       let ballSpeedX = 4;
       let ballSpeedY = 4;
       let playerPongScore = 0;
+      let promptTriggered = false;
 
       window.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
@@ -320,6 +359,8 @@
       });
 
       function updateAndRenderFrame() {
+        if (promptTriggered) return;
+
         ballX += ballSpeedX;
         ballY += ballSpeedY;
 
@@ -327,42 +368,4 @@
         if (ballY <= 0) { ballSpeedY = -ballSpeedY; }
 
         if (ballY + ballSize >= canvas.height - paddleHeight - 10) {
-          if (ballX + ballSize >= paddleX && ballX <= paddleX + paddleWidth) {
-            ballSpeedY = -ballSpeedY;
-            ballSpeedY *= 1.05;
-            ballSpeedX *= 1.05;
-            playerPongScore++;
-          } else if (ballY > canvas.height) {
-            alert(`Game Over! You kept the Chud bouncing ${playerPongScore} times!`);
-            ballX = canvas.width / 2;
-            ballY = 50;
-            ballSpeedX = 4;
-            ballSpeedY = 4;
-            playerPongScore = 0;
-          }
-        }
 
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = '#ff4500';
-        ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
-
-        if (imageLoaded) {
-          ctx.drawImage(ballImage, ballX, ballY, ballSize, ballSize);
-        } else {
-          ctx.fillStyle = '#ff4500';
-          ctx.fillRect(ballX, ballY, ballSize, ballSize);
-        }
-
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '20px sans-serif';
-        ctx.fillText(`Bounces: ${playerPongScore}`, 20, 35);
-
-        requestAnimationFrame(updateAndRenderFrame);
-      }
-
-      requestAnimationFrame(updateAndRenderFrame);
-    }
-  </script>
-</body>
