@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Long Chud Collector</title>
+  <title>Long Chud Collector & Pong</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #121214;
+      /* Gradient that shifts from crisp white to total deep space black down the massive height */
+      background: linear-gradient(to bottom, #ffffff 0%, #a1a8b8 2%, #222836 10%, #0b0f19 30%, #000000 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: white;
       overflow-x: hidden;
@@ -26,8 +27,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start; /* Aligns content toward the top */
-      padding-top: 15vh; /* Places the text perfectly center-screen but a bit to the top */
+      justify-content: flex-start;
+      padding-top: 15vh;
       box-sizing: border-box;
       transition: opacity 0.5s ease;
     }
@@ -49,7 +50,6 @@
       letter-spacing: 1px;
     }
 
-    /* Loading Bar Track Container */
     .progress-container {
       width: 300px;
       height: 12px;
@@ -57,15 +57,12 @@
       border-radius: 6px;
       border: 2px solid #ff450033;
       overflow: hidden;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }
 
-    /* Filled Loading Progress Bar */
     .progress-bar {
       width: 0%;
       height: 100%;
       background-color: #ff4500;
-      /* Animates smoothly from 0 to 100 over exactly 10 seconds */
       animation: loadProgress 10s linear forwards;
     }
 
@@ -97,7 +94,11 @@
       letter-spacing: 1px;
     }
 
-    /* Character Container Layout */
+    /* Main Scrolling Content Area */
+    #main-game-content {
+      display: block;
+    }
+
     .character-assembly {
       display: flex;
       flex-direction: column;
@@ -106,7 +107,6 @@
       position: relative;
     }
 
-    /* Top Head Piece */
     .head-segment {
       width: 450px;
       height: 380px;
@@ -117,7 +117,6 @@
       margin-top: 100px;
     }
 
-    /* Infinite Looping Shirt Middle */
     .infinite-shirt {
       width: 450px;
       height: 20000px; 
@@ -128,7 +127,6 @@
       position: relative;
     }
 
-    /* Bottom Hem Finish */
     .bottom-segment {
       width: 450px;
       height: 140px;
@@ -142,7 +140,6 @@
       margin-bottom: 100px;
     }
 
-    /* The End Game Button styling */
     .end-button {
       background-color: #ff4500;
       color: white;
@@ -162,13 +159,12 @@
       box-shadow: 0 1px 0 #992600;
     }
 
-    /* Scattered "CHUD" text tokens styles */
     .chud-token {
       position: absolute;
       font-size: 1.5rem;
       font-weight: bold;
       color: #00ffcc;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       padding: 4px 10px;
       border-radius: 5px;
       border: 1px solid #00ffcc88;
@@ -183,6 +179,36 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    /* PONG ARCADE SCREEN STYLES */
+    #pong-arena {
+      display: none; /* Initially invisible */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #050508;
+      z-index: 5000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #pong-canvas {
+      background-color: #000;
+      border: 4px solid #ff4500;
+      box-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
+      cursor: none; /* Hides mouse over the game block */
+    }
+
+    .pong-title {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff4500;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
   </style>
 </head>
 <body>
@@ -196,22 +222,26 @@
     </div>
   </div>
 
-  <!-- Floating UI Header Overlay -->
-  <div id="ui-container">
-    <div id="score">CHUDS COLLECTED: 0</div>
+  <!-- Main Scrolling Segment Wrap -->
+  <div id="main-game-content">
+    <div id="ui-container">
+      <div id="score">CHUDS COLLECTED: 0</div>
+    </div>
+
+    <div class="character-assembly">
+      <div class="head-segment"></div>
+      <div class="infinite-shirt" id="shirt-body"></div>
+      <div class="bottom-segment">
+        <button class="end-button" onclick="triggerEndGame()">FINISH THE CHALLENGE</button>
+      </div>
+    </div>
   </div>
 
-  <div class="character-assembly">
-    <!-- Top Head Part -->
-    <div class="head-segment"></div>
-    
-    <!-- Endless Repeating Shirt Body -->
-    <div class="infinite-shirt" id="shirt-body"></div>
-    
-    <!-- Bottom Hem Cut Part with End Button -->
-    <div class="bottom-segment">
-      <button class="end-button" onclick="triggerEndGame()">FINISH THE CHALLENGE</button>
-    </div>
+  <!-- Secret Pong Container Screen -->
+  <div id="pong-arena">
+    <div class="pong-title">CHUD PONG</div>
+    <canvas id="pong-canvas" width="700" height="450"></canvas>
+    <p style="color: #666; margin-top: 15px;">Move your mouse left and right to control the paddle</p>
   </div>
 
   <script>
@@ -220,19 +250,16 @@
     const shirtBody = document.getElementById('shirt-body');
     const scoreDisplay = document.getElementById('score');
 
-    // Handles hiding the loading screen after precisely 10 seconds (10000 milliseconds)
+    // Loading system dismiss step
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const loader = document.getElementById('loading-screen');
         loader.style.opacity = '0';
-        // Completely removes the layer after it fades out so you can click the website elements
-        setTimeout(() => {
-          loader.style.display = 'none';
-        }, 500); 
+        setTimeout(() => { loader.style.display = 'none'; }, 500); 
       }, 10000); 
     });
 
-    // Spawns tokens down the body canvas
+    // Populate item tokens
     for (let i = 0; i < totalTokensToSpawn; i++) {
       const token = document.createElement('div');
       token.className = 'chud-token';
@@ -254,13 +281,74 @@
 
       token.addEventListener('mouseover', collect);
       token.addEventListener('touchstart', collect);
-
       shirtBody.appendChild(token);
     }
 
+    // Finish action: triggers alert then launches Pong
     function triggerEndGame() {
-      alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!`);
+      alert(`You have reached the end of Chud!\n\nFinal Score: You collected ${collectedCount} out of ${totalTokensToSpawn} CHUD words!\n\nClick OK to transport to CHUD PONG!`);
+      
+      // Hide the scrolling list layer completely
+      document.getElementById('main-game-content').style.display = 'none';
+      document.body.style.overflow = 'hidden'; // Stop global window scrolling
+      
+      // Load Pong arena view layout
+      document.getElementById('pong-arena').style.display = 'flex';
+      startPongGame();
     }
-  </script>
-</body>
-</html>
+
+    // Pong Engine Mechanics
+    function startPongGame() {
+      const canvas = document.getElementById('pong-canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Load chud.jpg to act as the bouncing ball asset texture
+      const ballImage = new Image();
+      ballImage.src = 'chud.jpg';
+
+      // Game Variables Configuration
+      const paddleWidth = 120;
+      const paddleHeight = 15;
+      let paddleX = (canvas.width - paddleWidth) / 2;
+
+      // Ball attributes (Size properties matching the aspect scale)
+      const ballSize = 40; 
+      let ballX = canvas.width / 2;
+      let ballY = 50;
+      let ballSpeedX = 4;
+      let ballSpeedY = 4;
+      let playerPongScore = 0;
+
+      // Capture mouse positioning coordinates to shift paddle across bottom X axis
+      window.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const rootX = e.clientX - rect.left;
+        paddleX = rootX - (paddleWidth / 2);
+        
+        // Prevent paddle moving outside bounds
+        if (paddleX < 0) paddleX = 0;
+        if (paddleX > canvas.width - paddleWidth) paddleX = canvas.width - paddleWidth;
+      });
+
+      function updateAndRenderFrame() {
+        // 1. Move ball positioning physics 
+        ballX += ballSpeedX;
+        ballY += ballSpeedY;
+
+        // Bounce horizontally off side boundaries
+        if (ballX <= 0 || ballX + ballSize >= canvas.width) {
+          ballSpeedX = -ballSpeedX;
+        }
+        // Bounce off top wall ceiling
+        if (ballY <= 0) {
+          ballSpeedY = -ballSpeedY;
+        }
+
+        // 2. Check collision against player's bottom paddle boundary matrix
+        if (ballY + ballSize >= canvas.height - paddleHeight - 10) {
+          // If the ball aligns inside the active left/right paddle width segment
+          if (ballX + ballSize >= paddleX && ballX <= paddleX + paddleWidth) {
+            ballSpeedY = -ballSpeedY;
+            // Slight boost speed mechanics over time
+            ballSpeedY *= 1.05;
+            ballSpeedX *= 1.05
