@@ -249,14 +249,12 @@
     const shirtBody = document.getElementById('shirt-body');
     const scoreDisplay = document.getElementById('score');
 
-    // Loading system dismiss step - Force breaks screen after exactly 10 seconds
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        const loader = document.getElementById('loading-screen');
-        loader.style.opacity = '0';
-        setTimeout(() => { loader.style.display = 'none'; }, 500); 
-      }, 10000); 
-    });
+    // DIRECT TIMER BINDING (No wrapper event listeners)
+    setTimeout(() => {
+      const loader = document.getElementById('loading-screen');
+      loader.style.opacity = '0';
+      setTimeout(() => { loader.style.display = 'none'; }, 500); 
+    }, 10000); // 10000 milliseconds = Exactly 10 seconds
 
     // Populate item tokens
     for (let i = 0; i < totalTokensToSpawn; i++) {
@@ -350,7 +348,6 @@
         ctx.fillStyle = '#ff4500';
         ctx.fillRect(paddleX, canvas.height - paddleHeight - 10, paddleWidth, paddleHeight);
 
-        // Safety fallback: Draws image if loaded, otherwise draws a cool glowing red square
         if (imageLoaded) {
           ctx.drawImage(ballImage, ballX, ballY, ballSize, ballSize);
         } else {
@@ -360,3 +357,12 @@
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '20px sans-serif';
+        ctx.fillText(`Bounces: ${playerPongScore}`, 20, 35);
+
+        requestAnimationFrame(updateAndRenderFrame);
+      }
+
+      requestAnimationFrame(updateAndRenderFrame);
+    }
+  </script>
+</body>
