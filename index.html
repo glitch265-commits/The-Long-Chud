@@ -286,14 +286,14 @@
     const scoreDisplay = document.getElementById('score');
     let pongAnimationId;
 
-    // DIRECT TIMER BINDING 
+    // Direct Countdown Fix: Hides the screen smoothly after exactly 10 seconds
     setTimeout(() => {
       const loader = document.getElementById('loading-screen');
       loader.style.opacity = '0';
       setTimeout(() => { loader.style.display = 'none'; }, 500); 
     }, 10000);
 
-    // Populate item tokens
+    // Spawns tokens down the body canvas
     for (let i = 0; i < totalTokensToSpawn; i++) {
       const token = document.createElement('div');
       token.className = 'chud-token';
@@ -366,6 +366,4 @@
 
         if (ballX <= 0 || ballX + ballSize >= canvas.width) { ballSpeedX = -ballSpeedX; }
         if (ballY <= 0) { ballSpeedY = -ballSpeedY; }
-
-        if (ballY + ballSize >= canvas.height - paddleHeight - 10) {
 
